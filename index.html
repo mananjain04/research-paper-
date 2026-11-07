@@ -1168,11 +1168,17 @@
 
     const soundBtn = document.getElementById('soundBtn');
     const bgMusic = document.getElementById('bgMusic');
-    bgMusic.volume = 0.55;
+    if (bgMusic) bgMusic.volume = 0.7;
 
     function playBgMusic() {
-      if (soundEnabled && bgMusic.paused) {
-        bgMusic.play().catch(e => console.log('Autoplay deferred:', e));
+      if (!bgMusic) return;
+      if (soundEnabled) {
+        bgMusic.play().then(() => {
+          console.log("Music playing successfully");
+          soundBtn.textContent = '🔊';
+        }).catch(err => {
+          console.warn("Audio play blocked or waiting user interaction:", err);
+        });
       }
     }
 
@@ -1180,12 +1186,20 @@
       initAudio();
       soundEnabled = !soundEnabled;
       soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
-      if (soundEnabled) {
-        bgMusic.play().catch(e => {});
-      } else {
-        bgMusic.pause();
+      if (bgMusic) {
+        if (soundEnabled) {
+          bgMusic.play().catch(e => console.log(e));
+        } else {
+          bgMusic.pause();
+        }
       }
     });
+
+    // Also trigger music on any first user tap anywhere on the screen
+    document.body.addEventListener('click', () => {
+      initAudio();
+      playBgMusic();
+    }, { once: true });
 
     function playSound(type) {
       if (!soundEnabled) return;
