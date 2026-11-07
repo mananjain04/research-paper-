@@ -1167,39 +1167,48 @@
     }
 
     const soundBtn = document.getElementById('soundBtn');
-    const bgMusic = document.getElementById('bgMusic');
-    if (bgMusic) bgMusic.volume = 0.7;
+    let bgMusic = document.getElementById('bgMusic');
+    
+    // Fallback if audio element needs programmatic creation
+    if (!bgMusic) {
+      bgMusic = new Audio('assets/khairiyat.mp3');
+      bgMusic.loop = true;
+    }
+    bgMusic.volume = 0.85;
 
+    let musicStarted = false;
     function playBgMusic() {
-      if (!bgMusic) return;
-      if (soundEnabled) {
-        bgMusic.play().then(() => {
-          console.log("Music playing successfully");
-          soundBtn.textContent = '🔊';
-        }).catch(err => {
-          console.warn("Audio play blocked or waiting user interaction:", err);
-        });
-      }
+      if (musicStarted || !soundEnabled) return;
+      bgMusic.play().then(() => {
+        musicStarted = true;
+        soundBtn.textContent = '🔊';
+        console.log("Khairiyat music playing!");
+      }).catch(err => {
+        console.warn("Audio waiting for user gesture:", err);
+      });
     }
 
-    soundBtn.addEventListener('click', () => {
+    // Toggle button for sound / music
+    soundBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       initAudio();
       soundEnabled = !soundEnabled;
       soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
-      if (bgMusic) {
-        if (soundEnabled) {
-          bgMusic.play().catch(e => console.log(e));
-        } else {
-          bgMusic.pause();
-        }
+      if (soundEnabled) {
+        bgMusic.play().catch(e => console.log(e));
+        musicStarted = true;
+      } else {
+        bgMusic.pause();
       }
     });
 
-    // Also trigger music on any first user tap anywhere on the screen
-    document.body.addEventListener('click', () => {
-      initAudio();
-      playBgMusic();
-    }, { once: true });
+    // Start on first tap anywhere
+    ['click', 'touchstart', 'pointerdown'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        initAudio();
+        playBgMusic();
+      }, { once: true });
+    });
 
     function playSound(type) {
       if (!soundEnabled) return;
