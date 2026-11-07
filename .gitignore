@@ -1,0 +1,21 @@
+# Temporary investigation and extraction scripts
+*.py
+*.css
+*.js
+*.html
+!index.html
+temp_*
+matched_*
+extracted_*
+
+# Agent and configuration folders
+.agent/
+.agents/
+.gemini/
+.gsd/
+adapters/
+scripts/
+GSD-STYLE.md
+PROJECT_RULES.md
+VERSION
+model_capabilities.yaml
