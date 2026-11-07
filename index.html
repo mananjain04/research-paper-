@@ -776,6 +776,9 @@
 
   <div class="app-viewport">
     
+    <!-- Audio Element for Khairiyat Background Music -->
+    <audio id="bgMusic" src="assets/khairiyat.mp3" loop preload="auto"></audio>
+
     <!-- Top Navigation Controls -->
     <div class="top-controls">
       <div class="top-left-group">
@@ -1164,10 +1167,24 @@
     }
 
     const soundBtn = document.getElementById('soundBtn');
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.55;
+
+    function playBgMusic() {
+      if (soundEnabled && bgMusic.paused) {
+        bgMusic.play().catch(e => console.log('Autoplay deferred:', e));
+      }
+    }
+
     soundBtn.addEventListener('click', () => {
       initAudio();
       soundEnabled = !soundEnabled;
       soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) {
+        bgMusic.play().catch(e => {});
+      } else {
+        bgMusic.pause();
+      }
     });
 
     function playSound(type) {
@@ -1313,6 +1330,7 @@
     // Button event listeners
     document.getElementById('btnStartGame').addEventListener('click', () => {
       initAudio();
+      playBgMusic();
       playSound('tap');
       showPage(1);
     });
